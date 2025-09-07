@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="app-layout">
+        <!-- Input Panel -->
+        <section class="input-panel">
+            <h2 class="panel-title">
+                <i class="fas fa-keyboard"></i>
+                Input Text
+            </h2>
+            
+            <!-- Model Selection -->
+            <div class="form-group">
+                <label for="modelSelect">Select Model:</label>
+                <select id="modelSelect" class="form-control">
+                    {% for model_id, model_info in models.items() %}
+                    <option value="{{ model_id }}" {% if model_id == default_model %}selected{% endif %}>
+                        {{ model_info.display_name }} - {{ model_info.description }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Text Input Methods -->
+            <div class="input-tabs">
+                <button class="tab-btn active" data-tab="text">
+                    <i class="fas fa-edit"></i> Type Text
+                </button>
+                <button class="tab-btn" data-tab="file">
+                    <i class="fas fa-file-upload"></i> Upload File
+                </button>
+                <button class="tab-btn" data-tab="examples">
+                    <i class="fas fa-book"></i> Examples
+                </button>
+            </div>
+            
+            <!-- Text Input Tab -->
+            <div class="tab-content active" id="textTab">
+                <div class="form-group">
+                    <textarea 
+                        id="textInput" 
+                        class="form-control text-input" 
+                        placeholder="Enter your text here... (e.g., 'The quick brown fox jumps over the lazy dog.')"
+                        rows="6"
+                    ></textarea>
+                    <div class="text-counter">
+                        <span id="charCount">0</span> characters | 
+                        <span id="wordCount">0</span> words
+                    </div>
+                </div>
+            </div>
+            
+            <!-- File Upload Tab -->
+            <div class="tab-content" id="fileTab">
+                <div class="file-upload-area">
+                    <input type="file" id="fileInput" accept=".txt,.md" hidden>
+                    <label for="fileInput" class="file-upload-label">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload or drag and drop</span>
+                        <small>Supported: .txt, .md (max 5MB)</small>
+                    </label>
+                    <div id="fileInfo" class="file-info"></div>
+                </div>
+            </div>
+            
+            <!-- Examples Tab -->
+            <div class="tab-content" id="examplesTab">
+                <div class="examples-grid" id="examplesGrid">
+                    <!-- Examples will be loaded dynamically -->
+                </div>
+            </div>
+            
+            <!-- Process Button -->
+            <button id="processBtn" class="btn btn-primary btn-large">
+                <i class="fas fa-play"></i>
+                Process Text
+            </button>
+        </section>
+        
+        <!-- Visualization Panel -->
+        <section class="visualization-panel">
+            <div class="viz-header">
+                <h2 class="panel-title">
+                    <i class="fas fa-project-diagram"></i>
+                    Neural Network Visualization
+                </h2>
+                <div class="viz-controls">
+                    <button class="viz-btn" id="resetZoomBtn" title="Reset view">
+                        <i class="fas fa-compress"></i>
+                    </button>
+                    <button class="viz-btn" id="exportBtn" title="Export">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="viz-btn" id="fullscreenBtn" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Visualization Modes (Phase 2) -->
+            <div class="viz-modes" style="display: none;">
+                <button class="mode-btn active" data-mode="network">
+                    <i class="fas fa-network-wired"></i> Network
+                </button>
+                <button class="mode-btn" data-mode="attention">
+                    <i class="fas fa-th"></i> Attention
+                </button>
+                <button class="mode-btn" data-mode="embedding">
+                    <i class="fas fa-cube"></i> Embedding
+                </button>
+                <button class="mode-btn" data-mode="flow">
+                    <i class="fas fa-layer-group"></i> Flow
+                </button>
+            </div>
+            
+            <!-- Visualization Container -->
+            <div id="vizContainer" class="viz-container">
+                <div class="viz-placeholder">
+                    <i class="fas fa-brain fa-4x"></i>
+                    <h3>Ready to Visualize</h3>
+                    <p>Enter text and click "Process Text" to see the neural network visualization</p>
+                </div>
+            </div>
+            
+            <!-- Info Panel -->
+            <div class="info-panel" id="infoPanel">
+                <h3>Model Information</h3>
+                <div id="modelInfo" class="model-info">
+                    <!-- Model info will be displayed here -->
+                </div>
+                <h3>Processing Results</h3>
+                <div id="processingResults" class="processing-results">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loader">
+        <div class="loader-spinner"></div>
+        <p>Processing text through neural network...</p>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="errorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+            <button class="modal-close" onclick="closeErrorModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="errorMessage">
+            <!-- Error message will be displayed here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeErrorModal()">Close</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
