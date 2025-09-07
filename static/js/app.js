@@ -152,8 +152,34 @@ function updateTextCounts() {
     const charCount = text.length;
     const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
     
+    // Estimate tokens (rough approximation: 1 token ≈ 4 characters or 0.75 words)
+    // This is a simplified estimate; actual tokenization varies
+    const tokenEstimate = Math.ceil(Math.max(charCount / 4, wordCount * 0.75));
+    
     document.getElementById('charCount').textContent = charCount;
     document.getElementById('wordCount').textContent = wordCount;
+    
+    // Update token estimate with color coding
+    const tokenElement = document.getElementById('tokenEstimate');
+    const tokenWarning = document.getElementById('tokenWarning');
+    
+    tokenElement.textContent = `~${tokenEstimate} tokens`;
+    
+    // Remove all state classes
+    tokenElement.classList.remove('warning', 'danger');
+    
+    // Apply appropriate styling based on token count
+    if (tokenEstimate > 512) {
+        tokenElement.classList.add('danger');
+        tokenWarning.style.display = 'block';
+        tokenWarning.querySelector('span').textContent = `Text will be truncated (${tokenEstimate} tokens, 512 max)`;
+    } else if (tokenEstimate > 400) {
+        tokenElement.classList.add('warning');
+        tokenWarning.style.display = 'block';
+        tokenWarning.querySelector('span').textContent = 'Approaching token limit (512 max)';
+    } else {
+        tokenWarning.style.display = 'none';
+    }
 }
 
 /**
@@ -328,8 +354,17 @@ function displayResults(data) {
     // Update processing results
     const resultsDiv = document.getElementById('processingResults');
     if (resultsDiv) {
+        // Check if text was likely truncated (if we had a long input)
+        const inputTokenEstimate = Math.ceil(Math.max(state.currentText.length / 4, state.currentText.split(/\s+/).length * 0.75));
+        const wasTruncated = inputTokenEstimate > 512;
+        
         resultsDiv.innerHTML = `
-            <p><strong>Tokens:</strong></p>
+            ${wasTruncated ? `
+                <div style="background: rgba(255, 190, 11, 0.1); border: 1px solid var(--warning); padding: 8px; border-radius: 4px; margin-bottom: 12px; font-size: 0.875rem;">
+                    <i class="fas fa-info-circle"></i> Text was truncated to 512 tokens for processing
+                </div>
+            ` : ''}
+            <p><strong>Tokens Processed: ${data.tokens.length}</strong></p>
             <div style="font-family: monospace; font-size: 0.875rem; padding: 8px; background: var(--bg-tertiary); border-radius: 4px; margin-top: 8px;">
                 ${data.tokens.slice(0, 50).join(' ')}${data.tokens.length > 50 ? '...' : ''}
             </div>

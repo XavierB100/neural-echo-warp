@@ -221,6 +221,44 @@ body {
     text-align: right;
 }
 
+.token-estimate {
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background-color: var(--bg-tertiary);
+    transition: all var(--transition-fast);
+}
+
+.token-estimate.warning {
+    color: var(--warning);
+    background-color: rgba(255, 190, 11, 0.1);
+}
+
+.token-estimate.danger {
+    color: var(--error);
+    background-color: rgba(255, 0, 110, 0.1);
+}
+
+.token-warning {
+    margin-top: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: rgba(255, 190, 11, 0.1);
+    border: 1px solid var(--warning);
+    border-radius: 4px;
+    color: var(--warning);
+    font-size: 0.75rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.token-warning i {
+    margin-right: var(--spacing-xs);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* Input Tabs */
 .input-tabs {
     display: flex;

@@ -46,7 +46,12 @@
                     ></textarea>
                     <div class="text-counter">
                         <span id="charCount">0</span> characters | 
-                        <span id="wordCount">0</span> words
+                        <span id="wordCount">0</span> words |
+                        <span id="tokenEstimate" class="token-estimate">~0 tokens</span>
+                        <div id="tokenWarning" class="token-warning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Approaching token limit (512 max)</span>
+                        </div>
                     </div>
                 </div>
             </div>
