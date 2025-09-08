@@ -451,6 +451,7 @@ body {
 .viz-controls {
     display: flex;
     gap: var(--spacing-sm);
+    z-index: 101;  /* Ensure controls are above everything */
 }
 
 .viz-btn {
@@ -481,7 +482,8 @@ body {
     border-radius: 0.5rem;
     min-height: 500px;
     position: relative;
-    overflow: hidden;
+    overflow: auto;  /* Changed from hidden to auto to allow scrolling if needed */
+    padding: 10px;  /* Add padding to prevent cutoff */
 }
 
 .viz-placeholder {
@@ -679,45 +681,108 @@ body {
     }
 }
 
-/* ===== Visualization Modes ===== */
-.viz-modes {
+/* ===== Floating Visualization Controls ===== */
+.viz-floating-controls {
+    position: absolute !important;
+    right: 25px;  /* Adjusted for padding */
+    bottom: 25px;  /* Adjusted for padding */
     display: flex;
     gap: 10px;
-    padding: 10px;
-    background: var(--bg-tertiary);
-    border-radius: 8px;
-    margin-bottom: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.3s ease;
 }
 
-.mode-btn {
-    padding: 8px 16px;
+.viz-floating-controls:hover {
+    opacity: 1 !important;
+}
+
+.floating-mode-selector {
+    display: flex;
     background: var(--bg-primary);
-    border: 2px solid transparent;
-    border-radius: 6px;
-    color: var(--text-secondary);
-    cursor: pointer;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 4px;
+    gap: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
+}
+
+.floating-mode-btn {
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
 }
 
-.mode-btn:hover {
+.floating-mode-btn:hover {
     background: var(--bg-secondary);
     color: var(--accent-primary);
-    transform: translateY(-2px);
+    transform: scale(1.1);
 }
 
-.mode-btn.active {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+.floating-mode-btn.active {
+    background: var(--accent-primary);
     color: white;
-    border-color: var(--accent-primary);
     box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
 }
 
-.mode-btn i {
-    font-size: 1rem;
+.floating-toggle-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 14px;
 }
+
+.floating-toggle-btn:hover {
+    color: var(--accent-primary);
+}
+
+.floating-perf-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-size: 14px;
+}
+
+.floating-perf-btn:hover {
+    color: var(--accent-primary);
+}
+
+.floating-perf-btn.performance {
+    color: var(--warning);
+}
+
+.floating-perf-btn.quality {
+    color: var(--success);
+}
+
+/* Position floating controls within viz container */
+.viz-container { position: relative; }

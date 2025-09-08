@@ -91,10 +91,7 @@
                     Neural Network Visualization
                 </h2>
                 <div class="viz-controls">
-                    <button class="viz-btn" id="resetZoomBtn" title="Reset view">
-                        <i class="fas fa-compress"></i>
-                    </button>
-                    <button class="viz-btn" id="exportBtn" title="Export">
+                    <button class="viz-btn" id="exportBtn" title="Export" style="display: none;">
                         <i class="fas fa-download"></i>
                     </button>
                     <button class="viz-btn" id="fullscreenBtn" title="Fullscreen">
@@ -103,33 +100,32 @@
                 </div>
             </div>
             
-            <!-- Visualization Modes -->
-            <div class="viz-modes" style="display: none;">
-                <button class="mode-btn active" data-mode="network">
-                    <i class="fas fa-network-wired"></i> Network
-                </button>
-                <button class="mode-btn" data-mode="attention">
-                    <i class="fas fa-th"></i> Attention
-                </button>
-                <!-- Future modes (Phase 3+) -->
-                <!--
-                <button class="mode-btn" data-mode="embedding">
-                    <i class="fas fa-cube"></i> Embedding
-                </button>
-                <button class="mode-btn" data-mode="flow">
-                    <i class="fas fa-layer-group"></i> Flow
-                </button>
-                -->
-            
             <!-- Visualization Container -->
             <div id="vizContainer" class="viz-container">
+                <!-- Floating Visualization Controls -->
+                <div class="viz-floating-controls" style="display: none;">
+                    <div class="floating-mode-selector">
+                        <button class="floating-mode-btn active" data-mode="network" title="Network Graph">
+                            <i class="fas fa-project-diagram"></i>
+                        </button>
+                        <button class="floating-mode-btn" data-mode="attention" title="Attention Heatmap">
+                            <i class="fas fa-th"></i>
+                        </button>
+                    </div>
+                    <button class="floating-perf-btn" title="Performance Mode (Auto)">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </button>
+                    <button class="floating-toggle-btn" title="Toggle Controls">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                
                 <div class="viz-placeholder">
                     <i class="fas fa-brain fa-4x"></i>
                     <h3>Ready to Visualize</h3>
                     <p>Enter text and click "Process Text" to see the neural network visualization</p>
                 </div>
             </div>
-            
             <!-- Info Panel -->
             <div class="info-panel" id="infoPanel">
                 <h3>Model Information</h3>

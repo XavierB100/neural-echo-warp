@@ -34,6 +34,10 @@ class AttentionHeatmap {
         // Clear existing content
         d3.select(this.container).selectAll("*").remove();
         
+        // Adjust dimensions to prevent cutoff
+        this.options.width = this.options.width - 40;  // Account for container padding
+        this.options.height = this.options.height - 40;
+        
         // Calculate dimensions
         const innerWidth = this.options.width - this.options.margin.left - this.options.margin.right;
         const innerHeight = this.options.height - this.options.margin.top - this.options.margin.bottom;
@@ -181,6 +185,17 @@ class AttentionHeatmap {
                     }
                 }
             }
+            
+            // Downsample if matrix is too large (>100x100)
+            const maxSize = 100;
+            if (this.attentionMatrix && this.attentionMatrix.length > maxSize) {
+                console.log(`Downsampling attention matrix from ${this.attentionMatrix.length}x${this.attentionMatrix.length} to ${maxSize}x${maxSize}`);
+                this.attentionMatrix = this.downsampleMatrix(this.attentionMatrix, maxSize);
+                this.isDownsampled = true;
+                this.originalSize = this.data.tokens.length;
+            } else {
+                this.isDownsampled = false;
+            }
         }
         
         // Ensure we have a matrix
@@ -209,8 +224,59 @@ class AttentionHeatmap {
         return matrix;
     }
     
+    downsampleMatrix(matrix, targetSize) {
+        const sourceSize = matrix.length;
+        const blockSize = Math.ceil(sourceSize / targetSize);
+        const actualSize = Math.ceil(sourceSize / blockSize);
+        
+        const downsampled = Array(actualSize).fill().map(() => Array(actualSize).fill(0));
+        
+        for (let i = 0; i < actualSize; i++) {
+            for (let j = 0; j < actualSize; j++) {
+                let sum = 0;
+                let count = 0;
+                
+                // Average the block
+                for (let bi = 0; bi < blockSize; bi++) {
+                    for (let bj = 0; bj < blockSize; bj++) {
+                        const si = i * blockSize + bi;
+                        const sj = j * blockSize + bj;
+                        if (si < sourceSize && sj < sourceSize) {
+                            sum += matrix[si][sj];
+                            count++;
+                        }
+                    }
+                }
+                
+                downsampled[i][j] = count > 0 ? sum / count : 0;
+            }
+        }
+        
+        return downsampled;
+    }
+    
     render() {
-        const tokens = this.data.tokens || [];
+        let tokens = this.data.tokens || [];
+        
+        // If downsampled, create aggregated token labels
+        if (this.isDownsampled) {
+            const blockSize = Math.ceil(this.originalSize / this.attentionMatrix.length);
+            const downsampledTokens = [];
+            for (let i = 0; i < this.attentionMatrix.length; i++) {
+                const start = i * blockSize;
+                const end = Math.min(start + blockSize, tokens.length);
+                if (start < tokens.length) {
+                    // Show range or first token
+                    if (blockSize > 1) {
+                        downsampledTokens.push(`[${start}-${end-1}]`);
+                    } else {
+                        downsampledTokens.push(tokens[start]);
+                    }
+                }
+            }
+            tokens = downsampledTokens;
+        }
+        
         const innerWidth = this.options.width - this.options.margin.left - this.options.margin.right;
         const innerHeight = this.options.height - this.options.margin.top - this.options.margin.bottom;
         

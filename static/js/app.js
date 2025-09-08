@@ -10,7 +10,9 @@ const state = {
     processingData: null,
     theme: localStorage.getItem('theme') || 'light',
     currentVisualization: null,
-    visualizationMode: 'network' // 'network' or 'attention'
+    visualizationMode: 'network', // 'network' or 'attention'
+    performanceMode: 'auto', // 'auto', 'quality', 'performance'
+    useCanvas: false // Will be set based on token count or manual override
 };
 
 // API endpoints
@@ -110,11 +112,6 @@ function setupEventListeners() {
     }
     
     // Visualization controls
-    const resetZoomBtn = document.getElementById('resetZoomBtn');
-    if (resetZoomBtn) {
-        resetZoomBtn.addEventListener('click', resetVisualization);
-    }
-    
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', exportVisualization);
@@ -125,13 +122,68 @@ function setupEventListeners() {
         fullscreenBtn.addEventListener('click', toggleFullscreen);
     }
     
-    // Visualization mode buttons
-    document.querySelectorAll('.mode-btn').forEach(btn => {
+    // Listen for fullscreen changes (including ESC key)
+    document.addEventListener('fullscreenchange', () => {
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        if (fullscreenBtn) {
+            if (document.fullscreenElement) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                fullscreenBtn.title = 'Exit Fullscreen';
+            } else {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                fullscreenBtn.title = 'Fullscreen';
+            }
+        }
+    });
+    
+    // Floating visualization mode buttons
+    document.querySelectorAll('.floating-mode-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const mode = e.currentTarget.dataset.mode;
             switchVisualizationMode(mode);
         });
     });
+    
+    // Toggle floating controls visibility
+    const toggleBtn = document.querySelector('.floating-toggle-btn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const selector = document.querySelector('.floating-mode-selector');
+            if (selector) {
+                selector.style.display = selector.style.display === 'none' ? 'flex' : 'none';
+                toggleBtn.querySelector('i').className = 
+                    selector.style.display === 'none' ? 'fas fa-eye-slash' : 'fas fa-eye';
+            }
+        });
+    }
+    
+    // Performance mode toggle
+    const perfBtn = document.querySelector('.floating-perf-btn');
+    if (perfBtn) {
+        perfBtn.addEventListener('click', () => {
+            // Cycle through modes: auto -> quality -> performance -> auto
+            if (state.performanceMode === 'auto') {
+                state.performanceMode = 'quality';
+                perfBtn.title = 'Performance Mode (Quality)';
+                perfBtn.classList.add('quality');
+                perfBtn.classList.remove('performance');
+            } else if (state.performanceMode === 'quality') {
+                state.performanceMode = 'performance';
+                perfBtn.title = 'Performance Mode (Speed)';
+                perfBtn.classList.add('performance');
+                perfBtn.classList.remove('quality');
+            } else {
+                state.performanceMode = 'auto';
+                perfBtn.title = 'Performance Mode (Auto)';
+                perfBtn.classList.remove('quality', 'performance');
+            }
+            
+            // Re-render if we have data
+            if (state.processingData) {
+                initializeVisualization(state.processingData);
+            }
+        });
+    }
 }
 
 /**
@@ -364,10 +416,10 @@ window.selectExample = function(exampleId) {
 function displayResults(data) {
     console.log('Processing results:', data);
     
-    // Show visualization mode tabs
-    const vizModes = document.querySelector('.viz-modes');
-    if (vizModes) {
-        vizModes.style.display = 'flex';
+    // Show floating visualization controls
+    const floatingControls = document.querySelector('.viz-floating-controls');
+    if (floatingControls) {
+        floatingControls.style.display = 'flex';
     }
     
     // Update model info
@@ -430,26 +482,66 @@ function initializeVisualization(data) {
         state.currentVisualization = null;
     }
     
-    // Clear container
-    vizContainer.innerHTML = '';
+    // Save floating controls before clearing
+    const floatingControls = vizContainer.querySelector('.viz-floating-controls');
+    
+    // Clear container but preserve floating controls
+    Array.from(vizContainer.children).forEach(child => {
+        if (!child.classList.contains('viz-floating-controls')) {
+            child.remove();
+        }
+    });
+    
+    // Make sure floating controls are visible
+    if (floatingControls) {
+        floatingControls.style.display = 'flex';
+    }
+    
+    // Create a wrapper div for the visualization
+    const vizWrapper = document.createElement('div');
+    vizWrapper.style.width = 'calc(100% - 20px)';  // Account for padding
+    vizWrapper.style.height = 'calc(100% - 20px)';
+    vizWrapper.style.position = 'absolute';
+    vizWrapper.style.top = '10px';
+    vizWrapper.style.left = '10px';
+    vizContainer.appendChild(vizWrapper);
     
     // Get container dimensions
     const rect = vizContainer.getBoundingClientRect();
     const width = rect.width || 800;
     const height = rect.height || 600;
     
+    // Determine if we should use Canvas based on performance mode
+    if (state.performanceMode === 'auto') {
+        state.useCanvas = data.tokens.length > 150;
+    } else if (state.performanceMode === 'performance') {
+        state.useCanvas = true;
+    } else {
+        state.useCanvas = false;
+    }
+    
+    // Show performance indicator
+    if (data.tokens.length > 150) {
+        console.log(`Performance Mode: Using ${state.useCanvas ? 'Canvas' : 'SVG'} rendering for ${data.tokens.length} tokens`);
+    }
+    
     // Create visualization based on mode
     try {
         if (state.visualizationMode === 'network') {
-            // Create network visualization
-            if (window.NetworkVisualization) {
-                state.currentVisualization = new NetworkVisualization(
-                    vizContainer,
+            // Choose renderer based on performance needs
+            const VisualizationClass = state.useCanvas ? 
+                window.NetworkVisualizationCanvas : 
+                window.NetworkVisualization;
+            
+            if (VisualizationClass) {
+                state.currentVisualization = new VisualizationClass(
+                    vizWrapper,  // Use wrapper instead of container
                     data,
                     {
                         width: width,
                         height: height,
-                        showLabels: data.tokens.length <= 50  // Only show labels for smaller texts
+                        showLabels: data.tokens.length <= 50,  // Only show labels for smaller texts
+                        maxLinks: state.useCanvas ? 300 : 500  // Fewer links in canvas mode for performance
                     }
                 );
                 
@@ -457,6 +549,11 @@ function initializeVisualization(data) {
                 vizContainer.addEventListener('nodeClicked', (event) => {
                     console.log('Node clicked event:', event.detail);
                 });
+                
+                // Ensure floating controls are on top
+                if (floatingControls) {
+                    vizContainer.appendChild(floatingControls);
+                }
             } else {
                 console.error('NetworkVisualization not loaded');
                 showError('Network visualization module not loaded');
@@ -465,7 +562,7 @@ function initializeVisualization(data) {
             // Create attention heatmap
             if (window.AttentionHeatmap) {
                 state.currentVisualization = new AttentionHeatmap(
-                    vizContainer,
+                    vizWrapper,  // Use wrapper instead of container
                     data,
                     {
                         width: Math.min(width, height),
@@ -477,6 +574,11 @@ function initializeVisualization(data) {
                 vizContainer.addEventListener('cellClicked', (event) => {
                     console.log('Cell clicked event:', event.detail);
                 });
+                
+                // Ensure floating controls are on top
+                if (floatingControls) {
+                    vizContainer.appendChild(floatingControls);
+                }
             } else {
                 console.error('AttentionHeatmap not loaded');
                 showError('Attention heatmap module not loaded');
@@ -514,8 +616,8 @@ function updateThemeIcon() {
  * Switch visualization mode
  */
 function switchVisualizationMode(mode) {
-    // Update button states
-    document.querySelectorAll('.mode-btn').forEach(btn => {
+    // Update floating button states
+    document.querySelectorAll('.floating-mode-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.mode === mode);
     });
     
@@ -546,13 +648,27 @@ function exportVisualization() {
 
 function toggleFullscreen() {
     const vizContainer = document.getElementById('vizContainer');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    
     if (vizContainer) {
         if (!document.fullscreenElement) {
-            vizContainer.requestFullscreen().catch(err => {
+            vizContainer.requestFullscreen().then(() => {
+                // Update button icon when entering fullscreen
+                if (fullscreenBtn) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                    fullscreenBtn.title = 'Exit Fullscreen';
+                }
+            }).catch(err => {
                 console.error('Error entering fullscreen:', err);
             });
         } else {
-            document.exitFullscreen();
+            document.exitFullscreen().then(() => {
+                // Update button icon when exiting fullscreen
+                if (fullscreenBtn) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                    fullscreenBtn.title = 'Fullscreen';
+                }
+            });
         }
     }
 }
