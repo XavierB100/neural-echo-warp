@@ -277,8 +277,16 @@ class AttentionHeatmap {
             tokens = downsampledTokens;
         }
         
-        const innerWidth = this.options.width - this.options.margin.left - this.options.margin.right;
-        const innerHeight = this.options.height - this.options.margin.top - this.options.margin.bottom;
+        // Adjust scales for downsampled data to use full space
+        const matrixSize = this.attentionMatrix.length;
+        const cellSize = Math.min(
+            (this.options.width - this.options.margin.left - this.options.margin.right) / matrixSize,
+            (this.options.height - this.options.margin.top - this.options.margin.bottom) / matrixSize
+        );
+        
+        // Use calculated size for actual rendering area
+        const innerWidth = cellSize * matrixSize;
+        const innerHeight = cellSize * matrixSize;
         
         // Create cells
         const cells = [];
