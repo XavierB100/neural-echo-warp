@@ -176,8 +176,10 @@ class TextProcessor:
                 if len(tokens) > 150:
                     # Only return statistics for large sequences (>150 tokens)
                     result['embeddings'] = None  # Don't include full embeddings
+                    logger.info(f"Embeddings: {len(tokens)} tokens > 150 threshold - Returning statistics only")
                 else:
                     result['embeddings'] = embeddings.tolist()
+                    logger.info(f"Embeddings: {len(tokens)} tokens <= 150 threshold - Returning full embeddings")
                 
                 # Always calculate embedding statistics
                 result['embedding_stats'] = {
@@ -217,38 +219,78 @@ class TextProcessor:
         # Base threshold: 150 tokens for full data
         base_threshold = 150
         
+        # Log the attention processing start
+        if attentions:
+            first_layer_shape = attentions[0].shape
+            logger.info(f"Processing attention data - Shape: {first_layer_shape}")
+        
         for layer_idx, layer_attention in enumerate(attentions):
             # layer_attention shape: (batch, num_heads, seq_len, seq_len)
             layer_attention = layer_attention[0].cpu().numpy()  # Remove batch dimension
             seq_len = layer_attention.shape[-1]
             
-            # Determine sampling rate based on sequence length (50-token intervals)
-            # 0-150: 100%, 150-200: 70%, 200-250: 50%, 250-300: 35%, 
-            # 300-350: 25%, 350-400: 18%, 400-450: 12%, 450-512: 8%
+            # Improved smart sampling with minimum value guarantees
+            # Target: ~25,000-30,000 values per head for optimal visualization
+            target_values_per_head = 25000
+            total_values = seq_len * seq_len
+            
             if seq_len <= base_threshold:
-                sampling_rate = 1.0  # 100% - full data
+                # Full data for sequences <= 150 tokens
+                sampling_rate = 1.0
                 include_full_weights = True
-            elif seq_len <= 200:
-                sampling_rate = 0.7  # 70%
+                sampling_tier = "FULL (0-150)"
+                actual_values_per_head = total_values
+            else:
+                # Calculate base sampling rate for target values
+                base_rate = min(1.0, target_values_per_head / total_values)
+                
+                # Apply tier-based adjustments with minimums
+                if seq_len <= 200:
+                    # 150-200: High detail (at least 70% or target)
+                    sampling_rate = max(0.7, base_rate)
+                    sampling_tier = f"{sampling_rate*100:.0f}% (150-200)"
+                elif seq_len <= 250:
+                    # 200-250: Good detail (at least 50% or target)
+                    sampling_rate = max(0.5, base_rate)
+                    sampling_tier = f"{sampling_rate*100:.0f}% (200-250)"
+                elif seq_len <= 300:
+                    # 250-300: Moderate detail (at least 35% or target)
+                    sampling_rate = max(0.35, base_rate)
+                    sampling_tier = f"{sampling_rate*100:.0f}% (250-300)"
+                elif seq_len <= 350:
+                    # 300-350: Balanced (at least 25% or target)
+                    sampling_rate = max(0.25, base_rate)
+                    sampling_tier = f"{sampling_rate*100:.0f}% (300-350)"
+                elif seq_len <= 400:
+                    # 350-400: Selective (at least 18% or target)
+                    sampling_rate = max(0.18, base_rate)
+                    sampling_tier = f"{sampling_rate*100:.0f}% (350-400)"
+                elif seq_len <= 450:
+                    # 400-450: Sparse (at least 12% or target)
+                    sampling_rate = max(0.12, base_rate)  
+                    sampling_tier = f"{sampling_rate*100:.0f}% (400-450)"
+                else:
+                    # 450-512: Very sparse (at least 10% or target)
+                    sampling_rate = max(0.10, base_rate)
+                    sampling_tier = f"{sampling_rate*100:.0f}% (450-512)"
+                
                 include_full_weights = False
-            elif seq_len <= 250:
-                sampling_rate = 0.5  # 50%
-                include_full_weights = False
-            elif seq_len <= 300:
-                sampling_rate = 0.35  # 35%
-                include_full_weights = False
-            elif seq_len <= 350:
-                sampling_rate = 0.25  # 25%
-                include_full_weights = False
-            elif seq_len <= 400:
-                sampling_rate = 0.18  # 18%
-                include_full_weights = False
-            elif seq_len <= 450:
-                sampling_rate = 0.12  # 12%
-                include_full_weights = False
-            else:  # 450-512
-                sampling_rate = 0.08  # 8%
-                include_full_weights = False
+                actual_values_per_head = int(total_values * sampling_rate)
+                
+                # Ensure minimum of 25,000 values for consistency
+                if actual_values_per_head < target_values_per_head and total_values > target_values_per_head:
+                    actual_values_per_head = target_values_per_head
+                    sampling_rate = target_values_per_head / total_values
+            
+            # Log sampling decision for layer
+            if layer_idx == 0:  # Only log once for first layer
+                if include_full_weights:
+                    logger.info(f"Smart Sampling - Tokens: {seq_len}, Tier: {sampling_tier}")
+                    logger.info(f"→ Returning FULL attention matrices ({seq_len}x{seq_len} = {actual_values_per_head:,} values per head)")
+                else:
+                    effective_rate = (actual_values_per_head / total_values) * 100
+                    logger.info(f"Smart Sampling - Tokens: {seq_len}, Tier: {sampling_tier}, Effective Rate: {effective_rate:.1f}%")
+                    logger.info(f"→ Returning TOP {actual_values_per_head:,} values per head (from {total_values:,} total)")
             
             # Store attention for each head
             layer_data = {
@@ -279,9 +321,10 @@ class TextProcessor:
                 for head_idx in range(num_heads_to_sample):
                     head_attention = layer_attention[head_idx]
                     
-                    # Extract top attention values based on sampling rate
+                    # Extract top attention values based on calculated target
                     flat_attention = head_attention.flatten()
-                    num_values_to_keep = max(100, int(len(flat_attention) * sampling_rate))
+                    # Use the pre-calculated actual_values_per_head
+                    num_values_to_keep = min(len(flat_attention), actual_values_per_head)
                     
                     # Get indices of top attention values
                     top_indices = np.argpartition(flat_attention, -num_values_to_keep)[-num_values_to_keep:]
@@ -323,7 +366,8 @@ class TextProcessor:
             else:
                 # Sparse representation for sequences > 150
                 flat_avg = avg_attention.flatten()
-                num_values = max(100, int(len(flat_avg) * sampling_rate))
+                # Use the same target as individual heads for consistency
+                num_values = min(len(flat_avg), actual_values_per_head)
                 top_avg_indices = np.argpartition(flat_avg, -num_values)[-num_values:]
                 
                 layer_data['average'] = {
@@ -342,6 +386,16 @@ class TextProcessor:
                 }
             
             attention_data['layers'][f'layer_{layer_idx}'] = layer_data
+        
+        # Log summary of attention data size
+        if len(attention_data['layers']) > 0:
+            first_layer = attention_data['layers']['layer_0']
+            if 'sampling_rate' in first_layer:
+                original_size = first_layer['seq_len'] ** 2 * first_layer['num_heads'] * len(attention_data['layers'])
+                if first_layer['sampling_rate'] < 1.0:
+                    approx_returned = int(original_size * first_layer['sampling_rate'])
+                    reduction_pct = (1 - first_layer['sampling_rate']) * 100
+                    logger.info(f"Data reduction: {reduction_pct:.0f}% reduction ({original_size:,} → ~{approx_returned:,} values)")
         
         return attention_data
     
