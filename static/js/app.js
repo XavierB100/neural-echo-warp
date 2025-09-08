@@ -196,6 +196,10 @@ async function processText() {
     try {
         showLoading(true);
         
+        // Create an AbortController with timeout for longer texts
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
         const response = await fetch(API.PROCESS_TEXT, {
             method: 'POST',
             headers: {
@@ -209,10 +213,15 @@ async function processText() {
                     return_attention: true,
                     return_hidden_states: false
                 }
-            })
+            }),
+            signal: controller.signal
         });
         
+        clearTimeout(timeoutId);
+        
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
@@ -227,7 +236,11 @@ async function processText() {
         
     } catch (error) {
         console.error('Error processing text:', error);
-        showError('Failed to process text. Please try again.');
+        if (error.name === 'AbortError') {
+            showError('Request timed out. The text might be too long. Please try a shorter text.');
+        } else {
+            showError('Failed to process text. Please try again.');
+        }
     } finally {
         showLoading(false);
     }

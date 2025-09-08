@@ -171,9 +171,15 @@ class TextProcessor:
             # Get the last hidden state (embeddings)
             if hasattr(outputs, 'last_hidden_state'):
                 embeddings = outputs.last_hidden_state[0].cpu().numpy()
-                result['embeddings'] = embeddings.tolist()
                 
-                # Calculate some embedding statistics
+                # For long sequences, don't return full embeddings (too large)
+                if len(tokens) > 150:
+                    # Only return statistics for large sequences (>150 tokens)
+                    result['embeddings'] = None  # Don't include full embeddings
+                else:
+                    result['embeddings'] = embeddings.tolist()
+                
+                # Always calculate embedding statistics
                 result['embedding_stats'] = {
                     'mean': float(np.mean(embeddings)),
                     'std': float(np.std(embeddings)),
@@ -207,41 +213,133 @@ class TextProcessor:
             'layers': {}
         }
         
+        # Smart sampling thresholds with 50-token intervals
+        # Base threshold: 150 tokens for full data
+        base_threshold = 150
+        
         for layer_idx, layer_attention in enumerate(attentions):
             # layer_attention shape: (batch, num_heads, seq_len, seq_len)
             layer_attention = layer_attention[0].cpu().numpy()  # Remove batch dimension
+            seq_len = layer_attention.shape[-1]
+            
+            # Determine sampling rate based on sequence length (50-token intervals)
+            # 0-150: 100%, 150-200: 70%, 200-250: 50%, 250-300: 35%, 
+            # 300-350: 25%, 350-400: 18%, 400-450: 12%, 450-512: 8%
+            if seq_len <= base_threshold:
+                sampling_rate = 1.0  # 100% - full data
+                include_full_weights = True
+            elif seq_len <= 200:
+                sampling_rate = 0.7  # 70%
+                include_full_weights = False
+            elif seq_len <= 250:
+                sampling_rate = 0.5  # 50%
+                include_full_weights = False
+            elif seq_len <= 300:
+                sampling_rate = 0.35  # 35%
+                include_full_weights = False
+            elif seq_len <= 350:
+                sampling_rate = 0.25  # 25%
+                include_full_weights = False
+            elif seq_len <= 400:
+                sampling_rate = 0.18  # 18%
+                include_full_weights = False
+            elif seq_len <= 450:
+                sampling_rate = 0.12  # 12%
+                include_full_weights = False
+            else:  # 450-512
+                sampling_rate = 0.08  # 8%
+                include_full_weights = False
             
             # Store attention for each head
             layer_data = {
                 'num_heads': layer_attention.shape[0],
-                'heads': {}
+                'heads': {},
+                'sampling_rate': sampling_rate,
+                'seq_len': seq_len
             }
             
-            for head_idx in range(layer_attention.shape[0]):
-                head_attention = layer_attention[head_idx]
-                
-                # Convert to list and calculate statistics
-                layer_data['heads'][f'head_{head_idx}'] = {
-                    'weights': head_attention.tolist(),
-                    'stats': {
-                        'max': float(np.max(head_attention)),
-                        'min': float(np.min(head_attention)),
-                        'mean': float(np.mean(head_attention)),
-                        'std': float(np.std(head_attention))
+            # Process attention based on sampling rate
+            if include_full_weights:
+                # Full attention weights for sequences <= 150 tokens
+                for head_idx in range(layer_attention.shape[0]):
+                    head_attention = layer_attention[head_idx]
+                    layer_data['heads'][f'head_{head_idx}'] = {
+                        'weights': head_attention.tolist(),
+                        'stats': {
+                            'max': float(np.max(head_attention)),
+                            'min': float(np.min(head_attention)),
+                            'mean': float(np.mean(head_attention)),
+                            'std': float(np.std(head_attention))
+                        }
                     }
-                }
+            else:
+                # Smart sampling for sequences > 150 tokens
+                # Sample a subset of heads (max 4 for visualization)
+                num_heads_to_sample = min(4, layer_attention.shape[0])
+                for head_idx in range(num_heads_to_sample):
+                    head_attention = layer_attention[head_idx]
+                    
+                    # Extract top attention values based on sampling rate
+                    flat_attention = head_attention.flatten()
+                    num_values_to_keep = max(100, int(len(flat_attention) * sampling_rate))
+                    
+                    # Get indices of top attention values
+                    top_indices = np.argpartition(flat_attention, -num_values_to_keep)[-num_values_to_keep:]
+                    
+                    # Create sparse representation
+                    sparse_attention = {
+                        'indices': top_indices.tolist(),
+                        'values': flat_attention[top_indices].tolist(),
+                        'shape': list(head_attention.shape),
+                        'sampling_rate': sampling_rate
+                    }
+                    
+                    layer_data['heads'][f'head_{head_idx}'] = {
+                        'sparse_weights': sparse_attention,
+                        'stats': {
+                            'max': float(np.max(head_attention)),
+                            'min': float(np.min(head_attention)),
+                            'mean': float(np.mean(head_attention)),
+                            'std': float(np.std(head_attention))
+                        }
+                    }
             
             # Calculate average attention across heads
             avg_attention = np.mean(layer_attention, axis=0)
-            layer_data['average'] = {
-                'weights': avg_attention.tolist(),
-                'stats': {
-                    'max': float(np.max(avg_attention)),
-                    'min': float(np.min(avg_attention)),
-                    'mean': float(np.mean(avg_attention)),
-                    'std': float(np.std(avg_attention))
+            
+            # Include average attention based on same sampling strategy
+            if include_full_weights:
+                # Full weights for sequences <= 150
+                layer_data['average'] = {
+                    'weights': avg_attention.tolist(),
+                    'stats': {
+                        'max': float(np.max(avg_attention)),
+                        'min': float(np.min(avg_attention)),
+                        'mean': float(np.mean(avg_attention)),
+                        'std': float(np.std(avg_attention))
+                    },
+                    'shape': list(avg_attention.shape)
                 }
-            }
+            else:
+                # Sparse representation for sequences > 150
+                flat_avg = avg_attention.flatten()
+                num_values = max(100, int(len(flat_avg) * sampling_rate))
+                top_avg_indices = np.argpartition(flat_avg, -num_values)[-num_values:]
+                
+                layer_data['average'] = {
+                    'sparse_weights': {
+                        'indices': top_avg_indices.tolist(),
+                        'values': flat_avg[top_avg_indices].tolist(),
+                        'shape': list(avg_attention.shape),
+                        'sampling_rate': sampling_rate
+                    },
+                    'stats': {
+                        'max': float(np.max(avg_attention)),
+                        'min': float(np.min(avg_attention)),
+                        'mean': float(np.mean(avg_attention)),
+                        'std': float(np.std(avg_attention))
+                    }
+                }
             
             attention_data['layers'][f'layer_{layer_idx}'] = layer_data
         

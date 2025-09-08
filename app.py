@@ -93,10 +93,13 @@ def process_text():
         
         logger.info(f"Processed text with {model_name}: {result['metadata']['num_tokens']} tokens in {result['metadata']['processing_time']:.2f}s")
         
-        return jsonify({
+        # Use Flask's json response with proper configuration for large data
+        response = jsonify({
             'success': True,
             'data': result
         })
+        response.headers['Content-Type'] = 'application/json'
+        return response
         
     except Exception as e:
         logger.error(f"Error processing text: {str(e)}", exc_info=True)
