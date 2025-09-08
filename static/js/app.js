@@ -8,7 +8,9 @@ const state = {
     currentText: '',
     currentModel: 'distilbert',
     processingData: null,
-    theme: localStorage.getItem('theme') || 'light'
+    theme: localStorage.getItem('theme') || 'light',
+    currentVisualization: null,
+    visualizationMode: 'network' // 'network' or 'attention'
 };
 
 // API endpoints
@@ -122,6 +124,14 @@ function setupEventListeners() {
     if (fullscreenBtn) {
         fullscreenBtn.addEventListener('click', toggleFullscreen);
     }
+    
+    // Visualization mode buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const mode = e.currentTarget.dataset.mode;
+            switchVisualizationMode(mode);
+        });
+    });
 }
 
 /**
@@ -354,6 +364,12 @@ window.selectExample = function(exampleId) {
 function displayResults(data) {
     console.log('Processing results:', data);
     
+    // Show visualization mode tabs
+    const vizModes = document.querySelector('.viz-modes');
+    if (vizModes) {
+        vizModes.style.display = 'flex';
+    }
+    
     // Update model info
     const modelInfo = document.getElementById('modelInfo');
     if (modelInfo && data.metadata) {
@@ -395,20 +411,80 @@ function displayResults(data) {
         `;
     }
     
-    // Update visualization placeholder
+    // Initialize visualization
+    initializeVisualization(data);
+}
+
+/**
+ * Initialize visualization based on current mode
+ */
+function initializeVisualization(data) {
     const vizContainer = document.getElementById('vizContainer');
-    if (vizContainer) {
-        vizContainer.innerHTML = `
-            <div class="viz-placeholder">
-                <i class="fas fa-check-circle fa-4x" style="color: var(--success);"></i>
-                <h3>Processing Complete!</h3>
-                <p>Text has been processed. Visualization will be available in Phase 2.</p>
-                <p style="margin-top: 16px; font-size: 0.875rem;">
-                    <strong>Tokens processed:</strong> ${data.tokens.length}<br>
-                    <strong>Attention layers:</strong> ${data.attention ? data.attention.num_layers : 0}
-                </p>
-            </div>
-        `;
+    if (!vizContainer || !data) return;
+    
+    // Clear existing visualization
+    if (state.currentVisualization) {
+        if (typeof state.currentVisualization.destroy === 'function') {
+            state.currentVisualization.destroy();
+        }
+        state.currentVisualization = null;
+    }
+    
+    // Clear container
+    vizContainer.innerHTML = '';
+    
+    // Get container dimensions
+    const rect = vizContainer.getBoundingClientRect();
+    const width = rect.width || 800;
+    const height = rect.height || 600;
+    
+    // Create visualization based on mode
+    try {
+        if (state.visualizationMode === 'network') {
+            // Create network visualization
+            if (window.NetworkVisualization) {
+                state.currentVisualization = new NetworkVisualization(
+                    vizContainer,
+                    data,
+                    {
+                        width: width,
+                        height: height,
+                        showLabels: data.tokens.length <= 50  // Only show labels for smaller texts
+                    }
+                );
+                
+                // Add event listener for node clicks
+                vizContainer.addEventListener('nodeClicked', (event) => {
+                    console.log('Node clicked event:', event.detail);
+                });
+            } else {
+                console.error('NetworkVisualization not loaded');
+                showError('Network visualization module not loaded');
+            }
+        } else if (state.visualizationMode === 'attention') {
+            // Create attention heatmap
+            if (window.AttentionHeatmap) {
+                state.currentVisualization = new AttentionHeatmap(
+                    vizContainer,
+                    data,
+                    {
+                        width: Math.min(width, height),
+                        height: Math.min(width, height)
+                    }
+                );
+                
+                // Add event listener for cell clicks
+                vizContainer.addEventListener('cellClicked', (event) => {
+                    console.log('Cell clicked event:', event.detail);
+                });
+            } else {
+                console.error('AttentionHeatmap not loaded');
+                showError('Attention heatmap module not loaded');
+            }
+        }
+    } catch (error) {
+        console.error('Error creating visualization:', error);
+        showError('Failed to create visualization. Please try again.');
     }
 }
 
@@ -435,10 +511,33 @@ function updateThemeIcon() {
 }
 
 /**
- * Visualization controls (placeholders for Phase 2)
+ * Switch visualization mode
+ */
+function switchVisualizationMode(mode) {
+    // Update button states
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    
+    // Update state
+    state.visualizationMode = mode;
+    
+    // Reinitialize visualization if we have data
+    if (state.processingData) {
+        initializeVisualization(state.processingData);
+    }
+}
+
+/**
+ * Visualization controls
  */
 function resetVisualization() {
-    console.log('Reset visualization (Phase 2)');
+    if (state.currentVisualization && typeof state.currentVisualization.reset === 'function') {
+        state.currentVisualization.reset();
+    } else if (state.processingData) {
+        // Reinitialize visualization
+        initializeVisualization(state.processingData);
+    }
 }
 
 function exportVisualization() {
