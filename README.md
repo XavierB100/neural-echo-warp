@@ -170,6 +170,10 @@ On first run, the application will automatically download the required models (D
 - **Large Texts**: Performance may degrade with 400+ tokens
 - **GPU Support**: Currently CPU-only for broader compatibility
 
+## 📚 Case Study
+
+For a comprehensive technical deep-dive into the Neural Echo project's architecture, implementation details, and development journey, visit our [Case Study page](/case_study).
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

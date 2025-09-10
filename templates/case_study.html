@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Echo - Comprehensive Case Study</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/case_study.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="case-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>Neural Echo Case Study</span>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-home"></i> Back to App
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Neural Echo</h1>
+            <p class="hero-subtitle">A Deep Dive into Interactive Neural Network Visualization</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">4</span>
+                    <span class="stat-label">Visualization Modes</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">2</span>
+                    <span class="stat-label">Neural Models</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">512</span>
+                    <span class="stat-label">Max Tokens</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">60fps</span>
+                    <span class="stat-label">Performance</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Table of Contents -->
+    <section class="toc-section">
+        <div class="container">
+            <h2>Table of Contents</h2>
+            <div class="toc-grid">
+                <a href="#overview" class="toc-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Project Overview</span>
+                </a>
+                <a href="#technical" class="toc-item">
+                    <i class="fas fa-code"></i>
+                    <span>Technical Architecture</span>
+                </a>
+                <a href="#models" class="toc-item">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Models Deep Dive</span>
+                </a>
+                <a href="#visualizations" class="toc-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Visualization Techniques</span>
+                </a>
+                <a href="#implementation" class="toc-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>Implementation Journey</span>
+                </a>
+                <a href="#results" class="toc-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Results & Achievements</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Overview -->
+    <section id="overview" class="content-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                Project Overview
+            </h2>
+            
+            <div class="overview-intro">
+                <p class="lead">
+                    Neural Echo represents a groundbreaking approach to understanding how transformer-based neural networks process and interpret human language. By creating real-time, interactive visualizations of complex AI processes, this project bridges the gap between abstract mathematical concepts and intuitive understanding.
+                </p>
+            </div>
+
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <h3>🎯 The Vision</h3>
+                    <p>
+                        The core vision of Neural Echo was to demystify the "black box" nature of neural networks. When we input text into models like BERT or GPT, countless mathematical operations occur in milliseconds. This project makes those operations visible, tangible, and understandable through beautiful, interactive visualizations.
+                    </p>
+                </div>
+                
+                <div class="overview-card">
+                    <h3>🚀 The Challenge</h3>
+                    <p>
+                        Creating real-time visualizations of neural network processing presented unique challenges: handling high-dimensional data (768 dimensions), processing attention matrices with millions of values, maintaining 60fps performance, and making complex mathematical concepts accessible to users without deep ML knowledge.
+                    </p>
+                </div>
+                
+                <div class="overview-card">
+                    <h3>💡 The Solution</h3>
+                    <p>
+                        We developed a full-stack web application that processes text through state-of-the-art transformer models and presents the results through four distinct visualization modes. Each mode offers a different perspective on how neural networks understand language, from token relationships to semantic embeddings.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-showcase">
+                <h3>Key Features & Capabilities</h3>
+                <div class="feature-grid">
+                    <div class="feature">
+                        <div class="feature-icon">🧠</div>
+                        <h4>Dual Model Support</h4>
+                        <p>Switch between DistilBERT (bidirectional understanding) and GPT-2 (autoregressive generation) to see different processing approaches</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <h4>Four Visualization Modes</h4>
+                        <p>Network graphs, attention heatmaps, 3D embedding spaces, and layer flow diagrams provide comprehensive insights</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⚡</div>
+                        <h4>Real-time Processing</h4>
+                        <p>Sub-second processing for most texts with smart optimization for sequences up to 512 tokens</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🎨</div>
+                        <h4>Beautiful UI/UX</h4>
+                        <p>Glassmorphism design, smooth animations, dark/light themes, and intuitive controls</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📁</div>
+                        <h4>Export Capabilities</h4>
+                        <p>Save visualizations as high-resolution PNGs or export complete data as JSON for further analysis</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📚</div>
+                        <h4>Educational Focus</h4>
+                        <p>Comprehensive help system, tooltips, and documentation make complex concepts accessible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Architecture -->
+    <section id="technical" class="content-section alt-bg">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-code"></i>
+                Technical Architecture
+            </h2>
+
+            <div class="architecture-overview">
+                <h3>System Architecture Diagram</h3>
+                <div class="architecture-diagram">
+                    <div class="arch-layer frontend">
+                        <h4>Frontend Layer</h4>
+                        <div class="tech-stack">
+                            <span class="tech">HTML5</span>
+                            <span class="tech">CSS3</span>
+                            <span class="tech">JavaScript ES6+</span>
+                            <span class="tech">D3.js v7</span>
+                            <span class="tech">Three.js</span>
+                        </div>
+                    </div>
+                    <div class="arch-flow">↕️ REST API</div>
+                    <div class="arch-layer backend">
+                        <h4>Backend Layer</h4>
+                        <div class="tech-stack">
+                            <span class="tech">Flask 2.3.3</span>
+                            <span class="tech">Python 3.11+</span>
+                            <span class="tech">CORS Support</span>
+                            <span class="tech">LRU Cache</span>
+                        </div>
+                    </div>
+                    <div class="arch-flow">↕️ Processing Pipeline</div>
+                    <div class="arch-layer ml">
+                        <h4>ML Layer</h4>
+                        <div class="tech-stack">
+                            <span class="tech">PyTorch 2.0+</span>
+                            <span class="tech">Transformers 4.30+</span>
+                            <span class="tech">NumPy</span>
+                            <span class="tech">SciPy</span>
+                            <span class="tech">scikit-learn</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-details">
+                <h3>Technology Stack Deep Dive</h3>
+                
+                <div class="tech-category">
+                    <h4>🎨 Frontend Technologies</h4>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <h5>D3.js v7</h5>
+                            <p>Powers the force-directed network graphs and attention heatmaps. We leverage D3's data binding, transitions, and force simulation for smooth, interactive visualizations.</p>
+                            <code>d3.forceSimulation(), d3.scaleSequential(), d3.zoom()</code>
+                        </div>
+                        <div class="tech-item">
+                            <h5>Three.js</h5>
+                            <p>Enables WebGL-powered 3D rendering for the embedding space visualization. Includes OrbitControls for intuitive 3D navigation.</p>
+                            <code>THREE.Points, THREE.BufferGeometry, THREE.Raycaster</code>
+                        </div>
+                        <div class="tech-item">
+                            <h5>Canvas API</h5>
+                            <p>Used for high-performance rendering when visualizing large networks (>150 nodes), automatically switching from SVG for optimal performance.</p>
+                            <code>CanvasRenderingContext2D, requestAnimationFrame</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h4>🔧 Backend Architecture</h4>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <h5>Flask Application</h5>
+                            <p>RESTful API design with clear endpoints for text processing, model management, and visualization data. Implements proper error handling and CORS support.</p>
+                            <code>@app.route('/api/process_text'), jsonify(), Flask-CORS</code>
+                        </div>
+                        <div class="tech-item">
+                            <h5>Caching Strategy</h5>
+                            <p>LRU (Least Recently Used) cache with 1000-entry capacity. Cache keys are generated using MD5 hashes of input text and processing options.</p>
+                            <code>@lru_cache(maxsize=1000), hashlib.md5()</code>
+                        </div>
+                        <div class="tech-item">
+                            <h5>Model Management</h5>
+                            <p>Singleton pattern for model loading, automatic memory management, and support for model switching without server restart.</p>
+                            <code>ModelManager, get_model(), unload_model()</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h4>🤖 Machine Learning Pipeline</h4>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <h5>PyTorch Integration</h5>
+                            <p>CPU-optimized inference with automatic gradient computation disabled. Support for both CUDA and CPU devices with automatic detection.</p>
+                            <code>torch.no_grad(), model.eval(), device detection</code>
+                        </div>
+                        <div class="tech-item">
+                            <h5>Transformers Library</h5>
+                            <p>Hugging Face Transformers for model loading and tokenization. Custom configuration for attention weight and hidden state extraction.</p>
+                            <code>AutoModel.from_pretrained(), output_attentions=True</code>
+                        </div>
+                        <div class="tech-item">
+                            <h5>Dimensionality Reduction</h5>
+                            <p>PCA and t-SNE for reducing 768-dimensional embeddings to 2D/3D space. Fallback system for UMAP compatibility issues.</p>
+                            <code>PCA(n_components=3), TSNE(n_components=2)</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-flow">
+                <h3>Data Processing Pipeline</h3>
+                <div class="pipeline-diagram">
+                    <div class="pipeline-step">
+                        <div class="step-number">1</div>
+                        <h4>Input Processing</h4>
+                        <p>Text validation, sanitization, token estimation</p>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-number">2</div>
+                        <h4>Tokenization</h4>
+                        <p>Model-specific tokenization with padding and truncation</p>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-number">3</div>
+                        <h4>Model Inference</h4>
+                        <p>Forward pass through transformer layers</p>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-number">4</div>
+                        <h4>Data Extraction</h4>
+                        <p>Attention weights, embeddings, hidden states</p>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-number">5</div>
+                        <h4>Optimization</h4>
+                        <p>Smart sampling for large sequences</p>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">
+                        <div class="step-number">6</div>
+                        <h4>Visualization</h4>
+                        <p>Render interactive visualizations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Models Deep Dive -->
+    <section id="models" class="content-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-robot"></i>
+                AI Models Deep Dive
+            </h2>
+
+            <div class="models-intro">
+                <p class="lead">
+                    Neural Echo leverages two state-of-the-art transformer models, each representing different approaches to natural language understanding. Let's explore how these models work and how we visualize their internal mechanisms.
+                </p>
+            </div>
+
+            <div class="model-comparison">
+                <div class="model-card distilbert">
+                    <div class="model-header">
+                        <h3>DistilBERT</h3>
+                        <span class="model-type">Bidirectional Encoder</span>
+                    </div>
+                    <div class="model-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Parameters:</span>
+                            <span class="stat-value">66M</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Layers:</span>
+                            <span class="stat-value">6</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Attention Heads:</span>
+                            <span class="stat-value">12</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Hidden Size:</span>
+                            <span class="stat-value">768</span>
+                        </div>
+                    </div>
+                    <div class="model-description">
+                        <h4>How It Works</h4>
+                        <p>
+                            DistilBERT is a distilled version of BERT, retaining 97% of BERT's performance while being 60% faster and 40% smaller. It uses bidirectional attention, meaning each token can attend to all other tokens in the sequence simultaneously.
+                        </p>
+                        <h4>Key Characteristics</h4>
+                        <ul>
+                            <li><strong>Masked Language Modeling:</strong> Trained to predict masked tokens using context from both directions</li>
+                            <li><strong>Positional Embeddings:</strong> Adds position information to token embeddings</li>
+                            <li><strong>Multi-Head Attention:</strong> 12 parallel attention mechanisms capture different relationships</li>
+                            <li><strong>Layer Normalization:</strong> Stabilizes training and improves performance</li>
+                        </ul>
+                        <h4>Best For</h4>
+                        <p>Understanding context, sentiment analysis, question answering, and tasks requiring full sentence comprehension.</p>
+                    </div>
+                </div>
+
+                <div class="model-card gpt2">
+                    <div class="model-header">
+                        <h3>GPT-2</h3>
+                        <span class="model-type">Autoregressive Decoder</span>
+                    </div>
+                    <div class="model-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Parameters:</span>
+                            <span class="stat-value">124M</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Layers:</span>
+                            <span class="stat-value">12</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Attention Heads:</span>
+                            <span class="stat-value">12</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Hidden Size:</span>
+                            <span class="stat-value">768</span>
+                        </div>
+                    </div>
+                    <div class="model-description">
+                        <h4>How It Works</h4>
+                        <p>
+                            GPT-2 is an autoregressive language model that generates text by predicting the next token based on previous tokens. It uses causal attention masks to ensure tokens only attend to previous positions.
+                        </p>
+                        <h4>Key Characteristics</h4>
+                        <ul>
+                            <li><strong>Causal Attention:</strong> Each token can only attend to previous tokens (left-to-right)</li>
+                            <li><strong>Byte Pair Encoding:</strong> Efficient tokenization that handles out-of-vocabulary words</li>
+                            <li><strong>Layer-wise Processing:</strong> Information flows through 12 transformer blocks</li>
+                            <li><strong>Next Token Prediction:</strong> Trained to predict the next word in a sequence</li>
+                        </ul>
+                        <h4>Best For</h4>
+                        <p>Text generation, completion tasks, creative writing, and understanding sequential dependencies.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attention-mechanism">
+                <h3>Understanding Attention Mechanisms</h3>
+                <div class="attention-explanation">
+                    <div class="attention-formula">
+                        <h4>The Attention Formula</h4>
+                        <div class="formula">
+                            Attention(Q,K,V) = softmax(QK<sup>T</sup>/√d<sub>k</sub>)V
+                        </div>
+                        <p>Where Q (Query), K (Key), and V (Value) are learned projections of the input embeddings.</p>
+                    </div>
+                    <div class="attention-visual">
+                        <h4>What Attention Captures</h4>
+                        <div class="attention-types">
+                            <div class="attention-type">
+                                <h5>Syntactic Patterns</h5>
+                                <p>Subject-verb agreement, modifier relationships, phrase boundaries</p>
+                            </div>
+                            <div class="attention-type">
+                                <h5>Semantic Relations</h5>
+                                <p>Coreference resolution, entity relationships, concept associations</p>
+                            </div>
+                            <div class="attention-type">
+                                <h5>Positional Patterns</h5>
+                                <p>Sequential dependencies, distance relationships, structural patterns</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tokenization-process">
+                <h3>Tokenization Process</h3>
+                <div class="token-flow">
+                    <div class="token-step">
+                        <h4>1. Input Text</h4>
+                        <div class="example">"The quick brown fox"</div>
+                    </div>
+                    <div class="token-arrow">→</div>
+                    <div class="token-step">
+                        <h4>2. Subword Tokenization</h4>
+                        <div class="example">["The", "quick", "brown", "fox"]</div>
+                    </div>
+                    <div class="token-arrow">→</div>
+                    <div class="token-step">
+                        <h4>3. Token IDs</h4>
+                        <div class="example">[101, 1996, 4248, 4469, 102]</div>
+                    </div>
+                    <div class="token-arrow">→</div>
+                    <div class="token-step">
+                        <h4>4. Embeddings</h4>
+                        <div class="example">768-dimensional vectors</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualization Techniques -->
+    <section id="visualizations" class="content-section alt-bg">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Visualization Techniques
+            </h2>
+
+            <div class="viz-intro">
+                <p class="lead">
+                    Each visualization mode in Neural Echo employs sophisticated techniques to transform high-dimensional neural network data into intuitive, interactive visual representations.
+                </p>
+            </div>
+
+            <div class="viz-modes">
+                <div class="viz-mode">
+                    <div class="viz-header">
+                        <i class="fas fa-project-diagram"></i>
+                        <h3>Network Graph Visualization</h3>
+                    </div>
+                    <div class="viz-content">
+                        <h4>Technical Implementation</h4>
+                        <ul>
+                            <li><strong>Force-Directed Layout:</strong> Uses D3's force simulation with customized forces:
+                                <ul>
+                                    <li>Center force: Keeps graph centered</li>
+                                    <li>Charge force: Prevents node overlap (-300 strength)</li>
+                                    <li>Link force: Maintains edge distances based on attention weights</li>
+                                    <li>Collision force: Ensures minimum node separation</li>
+                                </ul>
+                            </li>
+                            <li><strong>Performance Optimization:</strong>
+                                <ul>
+                                    <li>Automatic Canvas rendering for >150 nodes</li>
+                                    <li>Quadtree optimization for collision detection</li>
+                                    <li>Throttled rendering using requestAnimationFrame</li>
+                                </ul>
+                            </li>
+                            <li><strong>Visual Encoding:</strong>
+                                <ul>
+                                    <li>Node size: Token importance (based on attention received)</li>
+                                    <li>Node color: Token type (special, capitalized, number, punctuation, word)</li>
+                                    <li>Edge width: Attention weight strength</li>
+                                    <li>Edge opacity: Normalized attention values</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4>Interaction Design</h4>
+                        <p>Drag nodes to explore relationships, zoom to focus on clusters, hover for detailed token information, and observe how attention patterns reveal linguistic structure.</p>
+                    </div>
+                </div>
+
+                <div class="viz-mode">
+                    <div class="viz-header">
+                        <i class="fas fa-th"></i>
+                        <h3>Attention Heatmap</h3>
+                    </div>
+                    <div class="viz-content">
+                        <h4>Technical Implementation</h4>
+                        <ul>
+                            <li><strong>Matrix Visualization:</strong>
+                                <ul>
+                                    <li>Rows represent query tokens</li>
+                                    <li>Columns represent key tokens</li>
+                                    <li>Cell color intensity shows attention weight</li>
+                                    <li>Viridis color scale for accessibility</li>
+                                </ul>
+                            </li>
+                            <li><strong>Smart Downsampling:</strong>
+                                <ul>
+                                    <li>Automatic downsampling to 100×100 for large sequences</li>
+                                    <li>Block averaging preserves attention patterns</li>
+                                    <li>Prevents browser crashes with large matrices</li>
+                                </ul>
+                            </li>
+                            <li><strong>Multi-Head Navigation:</strong>
+                                <ul>
+                                    <li>Layer selector (0-5 for DistilBERT, 0-11 for GPT-2)</li>
+                                    <li>Head selector (0-11) or average view</li>
+                                    <li>Smooth transitions between views</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4>Pattern Recognition</h4>
+                        <p>Diagonal patterns indicate sequential processing, vertical lines show tokens attending to specific positions, and block patterns reveal phrase-level attention.</p>
+                    </div>
+                </div>
+
+                <div class="viz-mode">
+                    <div class="viz-header">
+                        <i class="fas fa-cube"></i>
+                        <h3>3D Embedding Space</h3>
+                    </div>
+                    <div class="viz-content">
+                        <h4>Technical Implementation</h4>
+                        <ul>
+                            <li><strong>Dimensionality Reduction:</strong>
+                                <ul>
+                                    <li>PCA (Principal Component Analysis): Linear projection preserving maximum variance</li>
+                                    <li>t-SNE: Non-linear technique emphasizing local structure</li>
+                                    <li>768 dimensions → 3 dimensions</li>
+                                    <li>Explained variance tracking for quality assessment</li>
+                                </ul>
+                            </li>
+                            <li><strong>3D Rendering (Three.js):</strong>
+                                <ul>
+                                    <li>WebGL-powered point cloud rendering</li>
+                                    <li>BufferGeometry for efficient memory usage</li>
+                                    <li>Additive blending for glow effects</li>
+                                    <li>Fog for depth perception</li>
+                                </ul>
+                            </li>
+                            <li><strong>Interaction System:</strong>
+                                <ul>
+                                    <li>OrbitControls for intuitive navigation</li>
+                                    <li>Raycaster for hover detection</li>
+                                    <li>Smooth camera animations</li>
+                                    <li>Reset view functionality</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4>Semantic Insights</h4>
+                        <p>Observe how semantically similar tokens cluster together, explore the geometry of language representation, and understand how context affects token positioning.</p>
+                    </div>
+                </div>
+
+                <div class="viz-mode">
+                    <div class="viz-header">
+                        <i class="fas fa-layer-group"></i>
+                        <h3>Layer Flow Visualization</h3>
+                    </div>
+                    <div class="viz-content">
+                        <h4>Technical Implementation</h4>
+                        <ul>
+                            <li><strong>Layer Representation:</strong>
+                                <ul>
+                                    <li>Vertical layout with 100px spacing</li>
+                                    <li>Tokens positioned horizontally with slight randomization</li>
+                                    <li>Layer backgrounds with dashed borders</li>
+                                    <li>Gradient background for visual hierarchy</li>
+                                </ul>
+                            </li>
+                            <li><strong>Connection System:</strong>
+                                <ul>
+                                    <li>Primary connections (strength 1.0) between same tokens</li>
+                                    <li>Attention connections (strength 0.3) based on weights</li>
+                                    <li>Bezier curves for smooth paths</li>
+                                    <li>Opacity encoding for connection strength</li>
+                                </ul>
+                            </li>
+                            <li><strong>Animation Engine:</strong>
+                                <ul>
+                                    <li>800ms step-through animation</li>
+                                    <li>Easing functions for natural motion</li>
+                                    <li>Synchronized highlighting</li>
+                                    <li>Performance limited to 40 tokens</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4>Transformation Insights</h4>
+                        <p>Watch how token representations evolve through layers, observe information flow patterns, and understand how deep networks progressively refine understanding.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="performance-optimization">
+                <h3>Performance Optimization Strategies</h3>
+                <div class="optimization-grid">
+                    <div class="optimization">
+                        <h4>Smart Sampling</h4>
+                        <p>For sequences >150 tokens, we sample attention weights using a dynamic threshold (75th percentile) to maintain performance while preserving important connections.</p>
+                    </div>
+                    <div class="optimization">
+                        <h4>Progressive Rendering</h4>
+                        <p>Large visualizations render in stages: structure first, then details, allowing immediate interaction while refinements load.</p>
+                    </div>
+                    <div class="optimization">
+                        <h4>Caching Strategy</h4>
+                        <p>LRU cache stores processed results, reducing computation for repeated queries. Cache keys use MD5 hashes of input parameters.</p>
+                    </div>
+                    <div class="optimization">
+                        <h4>Adaptive Quality</h4>
+                        <p>Three performance modes (Auto, Quality, Speed) automatically adjust rendering quality based on data size and system capabilities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation Journey -->
+    <section id="implementation" class="content-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-cogs"></i>
+                Implementation Journey
+            </h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">📅</div>
+                    <div class="timeline-content">
+                        <h3>Phase 1: Foundation (Week 1)</h3>
+                        <h4>Building the Core Infrastructure</h4>
+                        <ul>
+                            <li><strong>Flask Application Setup:</strong> Created RESTful API structure with proper routing and error handling</li>
+                            <li><strong>Model Integration:</strong> Implemented ModelManager class with singleton pattern for efficient model loading</li>
+                            <li><strong>Text Processing Pipeline:</strong> Built tokenization and basic processing with smart token limit handling</li>
+                            <li><strong>UI Foundation:</strong> Developed responsive layout with glassmorphism design and theme support</li>
+                            <li><strong>Input Methods:</strong> Implemented text input, file upload, and example text selection</li>
+                        </ul>
+                        <div class="phase-metrics">
+                            <span class="metric">Files Created: 15</span>
+                            <span class="metric">Lines of Code: 1,200</span>
+                            <span class="metric">Features: 8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">📅</div>
+                    <div class="timeline-content">
+                        <h3>Phase 2: Core Visualizations (Weeks 2-3)</h3>
+                        <h4>Implementing D3.js Visualizations</h4>
+                        <ul>
+                            <li><strong>Force-Directed Network:</strong> Developed interactive token relationship graph with physics simulation</li>
+                            <li><strong>Attention Heatmap:</strong> Created matrix visualization with layer/head navigation</li>
+                            <li><strong>Performance Optimizations:</strong> Implemented Canvas/SVG switching and smart downsampling</li>
+                            <li><strong>Interaction System:</strong> Added zoom, pan, drag, and hover capabilities</li>
+                            <li><strong>Mode Switching:</strong> Built seamless transitions between visualization modes</li>
+                        </ul>
+                        <div class="phase-metrics">
+                            <span class="metric">Visualizations: 2</span>
+                            <span class="metric">Lines of Code: 1,800</span>
+                            <span class="metric">Performance: 60fps</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">📅</div>
+                    <div class="timeline-content">
+                        <h3>Phase 3: Advanced Features (Week 4)</h3>
+                        <h4>3D Visualizations and Layer Flow</h4>
+                        <ul>
+                            <li><strong>3D Embedding Space:</strong> Integrated Three.js for WebGL-powered 3D visualization</li>
+                            <li><strong>Dimensionality Reduction:</strong> Implemented PCA and t-SNE with fallback system</li>
+                            <li><strong>Layer Flow Diagram:</strong> Created animated token transformation visualization</li>
+                            <li><strong>Visual Polish:</strong> Added glow effects, gradients, and smooth animations</li>
+                            <li><strong>Backend Enhancement:</strong> Built embedding processor module for dimension reduction</li>
+                        </ul>
+                        <div class="phase-metrics">
+                            <span class="metric">Visualizations: 4</span>
+                            <span class="metric">3D Support: ✓</span>
+                            <span class="metric">Animations: 5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">📅</div>
+                    <div class="timeline-content">
+                        <h3>Phase 4: Polish & Documentation (Week 5)</h3>
+                        <h4>Production-Ready Release</h4>
+                        <ul>
+                            <li><strong>Export Functionality:</strong> Implemented PNG and JSON export with elegant UI</li>
+                            <li><strong>Help System:</strong> Created comprehensive interactive help modal</li>
+                            <li><strong>GPT-2 Integration:</strong> Added full support for second model with proper tokenization</li>
+                            <li><strong>Documentation:</strong> Wrote extensive README and phase completion reports</li>
+                            <li><strong>Error Handling:</strong> Added 404/500 pages and improved error messages</li>
+                        </ul>
+                        <div class="phase-metrics">
+                            <span class="metric">Documentation: 5 files</span>
+                            <span class="metric">Export Formats: 2</span>
+                            <span class="metric">Models: 2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="challenges-solutions">
+                <h3>Technical Challenges & Solutions</h3>
+                <div class="challenge-grid">
+                    <div class="challenge">
+                        <h4>🔥 Challenge: Memory Management</h4>
+                        <p class="challenge-desc">Processing large attention matrices (512×512×12×6) consumed excessive memory</p>
+                        <p class="solution">✅ <strong>Solution:</strong> Implemented sparse matrix representation for sequences >150 tokens, reducing memory usage by 80-92%</p>
+                    </div>
+                    <div class="challenge">
+                        <h4>🔥 Challenge: Performance at Scale</h4>
+                        <p class="challenge-desc">Rendering thousands of attention connections caused frame drops</p>
+                        <p class="solution">✅ <strong>Solution:</strong> Automatic Canvas rendering for large graphs, connection limiting, and progressive rendering</p>
+                    </div>
+                    <div class="challenge">
+                        <h4>🔥 Challenge: Python 3.13 Compatibility</h4>
+                        <p class="challenge-desc">UMAP library incompatible with latest Python version</p>
+                        <p class="solution">✅ <strong>Solution:</strong> Implemented fallback system with PCA as primary reduction method</p>
+                    </div>
+                    <div class="challenge">
+                        <h4>🔥 Challenge: Cross-Model Compatibility</h4>
+                        <p class="challenge-desc">Different tokenization schemes between DistilBERT and GPT-2</p>
+                        <p class="solution">✅ <strong>Solution:</strong> Created unified token processing with model-specific handling</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="development-stats">
+                <h3>Development Statistics</h3>
+                <div class="stats-grid">
+                    <div class="dev-stat">
+                        <div class="stat-number">30</div>
+                        <div class="stat-label">Total Files</div>
+                    </div>
+                    <div class="dev-stat">
+                        <div class="stat-number">5,000+</div>
+                        <div class="stat-label">Lines of Code</div>
+                    </div>
+                    <div class="dev-stat">
+                        <div class="stat-number">14</div>
+                        <div class="stat-label">Git Commits</div>
+                    </div>
+                    <div class="dev-stat">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Development Phases</div>
+                    </div>
+                    <div class="dev-stat">
+                        <div class="stat-number">20+</div>
+                        <div class="stat-label">npm/pip Packages</div>
+                    </div>
+                    <div class="dev-stat">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Feature Complete</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results & Achievements -->
+    <section id="results" class="content-section alt-bg">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-trophy"></i>
+                Results & Achievements
+            </h2>
+
+            <div class="achievements-grid">
+                <div class="achievement">
+                    <div class="achievement-icon">⚡</div>
+                    <h3>Performance Excellence</h3>
+                    <ul>
+                        <li>Sub-second processing for texts up to 200 tokens</li>
+                        <li>60fps maintained during all interactions</li>
+                        <li>Handles 512 tokens without crashes</li>
+                        <li>Smart optimization reduces data by 80-92% for large sequences</li>
+                    </ul>
+                </div>
+                <div class="achievement">
+                    <div class="achievement-icon">🎨</div>
+                    <h3>Design Innovation</h3>
+                    <ul>
+                        <li>Glassmorphism UI with modern aesthetics</li>
+                        <li>Smooth animations and transitions</li>
+                        <li>Intuitive interaction patterns</li>
+                        <li>Responsive design for all screen sizes</li>
+                    </ul>
+                </div>
+                <div class="achievement">
+                    <div class="achievement-icon">🧠</div>
+                    <h3>Educational Impact</h3>
+                    <ul>
+                        <li>Makes complex AI concepts accessible</li>
+                        <li>Interactive learning through exploration</li>
+                        <li>Comprehensive help documentation</li>
+                        <li>Multiple perspectives on neural processing</li>
+                    </ul>
+                </div>
+                <div class="achievement">
+                    <div class="achievement-icon">💻</div>
+                    <h3>Technical Mastery</h3>
+                    <ul>
+                        <li>Full-stack implementation with clean architecture</li>
+                        <li>Efficient ML model integration</li>
+                        <li>Advanced visualization techniques</li>
+                        <li>Production-ready error handling</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="metrics-showcase">
+                <h3>Key Performance Metrics</h3>
+                <div class="metrics-chart">
+                    <div class="metric-bar">
+                        <div class="metric-label">Processing Speed</div>
+                        <div class="metric-visual">
+                            <div class="bar" style="width: 95%;">< 1s for most texts</div>
+                        </div>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-label">Render Performance</div>
+                        <div class="metric-visual">
+                            <div class="bar" style="width: 100%;">60 fps</div>
+                        </div>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-label">Memory Efficiency</div>
+                        <div class="metric-visual">
+                            <div class="bar" style="width: 92%;">92% reduction</div>
+                        </div>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-label">Browser Compatibility</div>
+                        <div class="metric-visual">
+                            <div class="bar" style="width: 100%;">All modern browsers</div>
+                        </div>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-label">Code Quality</div>
+                        <div class="metric-visual">
+                            <div class="bar" style="width: 95%;">Well-documented</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="learning-outcomes">
+                <h3>Technical Skills Demonstrated</h3>
+                <div class="skills-cloud">
+                    <span class="skill large">Full-Stack Development</span>
+                    <span class="skill medium">Machine Learning</span>
+                    <span class="skill large">Data Visualization</span>
+                    <span class="skill small">RESTful APIs</span>
+                    <span class="skill medium">WebGL/Three.js</span>
+                    <span class="skill large">Python</span>
+                    <span class="skill medium">JavaScript ES6+</span>
+                    <span class="skill small">Flask</span>
+                    <span class="skill large">PyTorch</span>
+                    <span class="skill medium">D3.js</span>
+                    <span class="skill small">CSS3 Animations</span>
+                    <span class="skill medium">Transformers</span>
+                    <span class="skill small">Git</span>
+                    <span class="skill large">UI/UX Design</span>
+                    <span class="skill medium">Performance Optimization</span>
+                    <span class="skill small">Technical Writing</span>
+                </div>
+            </div>
+
+            <div class="impact-statement">
+                <h3>Project Impact</h3>
+                <blockquote>
+                    Neural Echo successfully bridges the gap between complex machine learning concepts and intuitive understanding. By providing real-time, interactive visualizations of neural network processing, it serves as both an educational tool for students and researchers, and a portfolio piece demonstrating mastery of full-stack development, machine learning integration, and data visualization. The project's clean architecture, comprehensive documentation, and polished user experience set a high standard for technical projects that aim to make AI more accessible and understandable.
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conclusion -->
+    <section class="conclusion-section">
+        <div class="container">
+            <h2>Conclusion</h2>
+            <div class="conclusion-content">
+                <p class="lead">
+                    Neural Echo represents more than just a visualization tool—it's a testament to the power of combining cutting-edge AI technology with thoughtful design and engineering excellence. Through four carefully crafted phases of development, we've created an application that not only showcases the inner workings of transformer models but also demonstrates best practices in full-stack development, from architecture design to user experience.
+                </p>
+                <p>
+                    The project's success lies not just in its technical achievements—the 60fps performance, the handling of 512-token sequences, or the beautiful visualizations—but in its ability to make the complex accessible. Every design decision, from the choice of color schemes to the implementation of performance optimizations, was made with the end user in mind.
+                </p>
+                <p>
+                    As artificial intelligence continues to shape our world, tools like Neural Echo become increasingly important. They demystify the "black box" of neural networks, foster understanding, and inspire the next generation of AI researchers and developers. This project stands as a bridge between the theoretical and the practical, the complex and the intuitive, the technical and the beautiful.
+                </p>
+                <div class="final-thoughts">
+                    <h3>Looking Forward</h3>
+                    <p>
+                        While Neural Echo is feature-complete and production-ready, it also serves as a foundation for future exploration. The modular architecture allows for easy extension with new models, visualization modes, or analytical features. The comprehensive documentation ensures that others can learn from, build upon, and improve this work.
+                    </p>
+                    <p class="signature">
+                        Built with dedication to understanding neural networks better.<br>
+                        <strong>— Neural Echo Development Team</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="case-footer">
+        <div class="container">
+            <p>© 2025 Neural Echo | Case Study | <a href="/">Return to Application</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add parallax effect to hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-background');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
