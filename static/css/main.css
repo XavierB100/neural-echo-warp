@@ -637,11 +637,86 @@ body {
     background-color: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     padding: var(--spacing-lg) 0;
+    margin-top: auto;
     text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
 }
 
-.main-footer p {
-    font-size: 0.875rem;
+/* ===== Embedding Space Visualization ===== */
+.embedding-controls {
+    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+}
+
+.embedding-controls button {
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.embedding-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+}
+
+.embedding-tooltip {
+    backdrop-filter: blur(10px) !important;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95)) !important;
+    border: 1px solid rgba(0, 255, 136, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.embedding-loading {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+    padding: 2rem;
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+}
+
+/* ===== Layer Flow Visualization ===== */
+.layer-flow-controls {
+    backdrop-filter: blur(10px) !important;
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+    max-width: 250px;
+}
+
+.layer-flow-controls button {
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.layer-flow-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+}
+
+.layer-flow-tooltip {
+    backdrop-filter: blur(10px) !important;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95)) !important;
+    border: 1px solid rgba(0, 255, 136, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.layer-label {
+    font-family: var(--font-mono) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Animations for nodes */
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.node:hover circle {
+    animation: pulse 1s infinite;
+}
     color: var(--text-secondary);
 }
 

@@ -13,9 +13,10 @@ import time
 
 from config import get_config
 
-# Import our modules (we'll create these next)
+# Import our modules
 from models.model_loader import ModelManager
 from models.text_processor import TextProcessor
+from models.embedding_processor import EmbeddingProcessor
 
 # Configure logging
 logging.basicConfig(
@@ -31,9 +32,10 @@ app.config.from_object(get_config())
 # Enable CORS
 CORS(app, origins=app.config['CORS_ORIGINS'])
 
-# Initialize model manager and text processor
+# Initialize model manager, text processor, and embedding processor
 model_manager = ModelManager(app.config)
 text_processor = TextProcessor(app.config)
+embedding_processor = EmbeddingProcessor()
 
 
 def allowed_file(filename):
@@ -222,6 +224,46 @@ def get_example_texts():
         'success': True,
         'examples': examples
     })
+
+
+@app.route('/api/reduce_embeddings', methods=['POST'])
+def reduce_embeddings():
+    """Reduce high-dimensional embeddings for visualization"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        embeddings = data.get('embeddings')
+        if not embeddings:
+            return jsonify({'error': 'No embeddings provided'}), 400
+        
+        # Convert to numpy array
+        import numpy as np
+        embeddings_array = np.array(embeddings)
+        
+        # Get reduction parameters
+        method = data.get('method', 'umap')
+        n_components = data.get('n_components', 3)
+        
+        # Perform reduction
+        result = embedding_processor.reduce_embeddings(
+            embeddings=embeddings_array,
+            method=method,
+            n_components=n_components
+        )
+        
+        return jsonify({
+            'success': True,
+            'data': result
+        })
+        
+    except Exception as e:
+        logger.error(f"Error reducing embeddings: {str(e)}", exc_info=True)
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @app.route('/api/health', methods=['GET'])

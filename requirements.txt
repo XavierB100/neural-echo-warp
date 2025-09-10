@@ -21,6 +21,8 @@ cachetools>=5.3.0
 # flake8==6.1.0
 # pytest==7.4.0
 
-# Future visualization dependencies (Phase 2+)
-# umap-learn==0.5.3
+# Dimensionality Reduction (Phase 3)
+# umap-learn==0.5.3  # Currently disabled due to Python 3.13 compatibility issues
+
+# Future visualization dependencies
 # plotly==5.16.1

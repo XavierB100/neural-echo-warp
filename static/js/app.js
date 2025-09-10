@@ -583,6 +583,53 @@ function initializeVisualization(data) {
                 console.error('AttentionHeatmap not loaded');
                 showError('Attention heatmap module not loaded');
             }
+        } else if (state.visualizationMode === 'embedding') {
+            // Create embedding space visualization
+            if (window.EmbeddingSpaceVisualization) {
+                state.currentVisualization = new EmbeddingSpaceVisualization(
+                    vizWrapper,
+                    data,
+                    {
+                        width: width,
+                        height: height,
+                        dimensions: 3,  // Default to 3D
+                        method: 'pca',  // Using PCA due to UMAP compatibility issues with Python 3.13
+                        pointSize: 8,
+                        showLabels: data.tokens.length <= 30
+                    }
+                );
+                
+                // Ensure floating controls are on top
+                if (floatingControls) {
+                    vizContainer.appendChild(floatingControls);
+                }
+            } else {
+                console.error('EmbeddingSpaceVisualization not loaded');
+                showError('Embedding space visualization module not loaded');
+            }
+        } else if (state.visualizationMode === 'flow') {
+            // Create layer flow visualization
+            if (window.LayerFlowVisualization) {
+                state.currentVisualization = new LayerFlowVisualization(
+                    vizWrapper,
+                    data,
+                    {
+                        width: width,
+                        height: height,
+                        maxTokens: 50,  // Limit for performance
+                        showConnections: data.tokens.length <= 30,
+                        animationDuration: 500
+                    }
+                );
+                
+                // Ensure floating controls are on top
+                if (floatingControls) {
+                    vizContainer.appendChild(floatingControls);
+                }
+            } else {
+                console.error('LayerFlowVisualization not loaded');
+                showError('Layer flow visualization module not loaded');
+            }
         }
     } catch (error) {
         console.error('Error creating visualization:', error);

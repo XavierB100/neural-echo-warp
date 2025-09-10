@@ -103,10 +103,11 @@ class TextProcessor:
             # Move inputs to device
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
             
-            # Get model outputs
+            # Get model outputs with hidden states
             logger.debug("Running model inference...")
             with torch.no_grad():
-                outputs = model(**inputs)
+                # Enable output of hidden states for layer flow visualization
+                outputs = model(**inputs, output_hidden_states=True, output_attentions=True)
             
             # Extract data based on options
             result = self._extract_visualization_data(
