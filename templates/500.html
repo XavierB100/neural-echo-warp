@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 Server Error - Neural Echo</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .error-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 500px;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .error-message {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin: 1rem 0;
+        }
+        
+        .error-description {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 2rem 0;
+            line-height: 1.6;
+        }
+        
+        .error-actions {
+            margin-top: 2rem;
+        }
+        
+        .error-btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        
+        .error-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .neural-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-content">
+            <div class="neural-icon">🧠</div>
+            <h1 class="error-code">500</h1>
+            <h2 class="error-message">Server Error</h2>
+            <p class="error-description">
+                Oops! The neural network encountered an unexpected error while processing your request. 
+                Our neurons are working hard to fix this issue. Please try again in a moment.
+            </p>
+            <div class="error-actions">
+                <a href="/" class="error-btn">Go to Homepage</a>
+                <a href="javascript:window.location.reload();" class="error-btn">Retry</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

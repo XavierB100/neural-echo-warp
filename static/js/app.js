@@ -111,6 +111,20 @@ function setupEventListeners() {
         themeToggle.addEventListener('click', toggleTheme);
     }
     
+    // Help button
+    const helpBtn = document.getElementById('helpBtn');
+    if (helpBtn) {
+        helpBtn.addEventListener('click', showHelp);
+    }
+    
+    // Case Study button (placeholder)
+    const caseStudyBtn = document.getElementById('caseStudyBtn');
+    if (caseStudyBtn) {
+        caseStudyBtn.addEventListener('click', () => {
+            showError('Case studies coming soon! This feature will showcase real-world examples of neural network text processing.');
+        });
+    }
+    
     // Visualization controls
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
@@ -690,8 +704,211 @@ function resetVisualization() {
 }
 
 function exportVisualization() {
-    console.log('Export visualization (Phase 2)');
+    // Create export menu
+    const existingMenu = document.querySelector('.export-menu');
+    if (existingMenu) {
+        existingMenu.remove();
+        return;
+    }
+    
+    const menu = document.createElement('div');
+    menu.className = 'export-menu';
+    menu.innerHTML = `
+        <div class="export-menu-content">
+            <button onclick="exportAsPNG()" class="export-option">
+                <i class="fas fa-image"></i> Export as PNG
+            </button>
+            <button onclick="exportAsJSON()" class="export-option">
+                <i class="fas fa-code"></i> Export as JSON
+            </button>
+        </div>
+    `;
+    
+    // Position above the export button (not below)
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        const rect = exportBtn.getBoundingClientRect();
+        menu.style.position = 'fixed';
+        // Position ABOVE the button instead of below
+        menu.style.bottom = `${window.innerHeight - rect.top + 10}px`;
+        menu.style.right = '20px';
+        menu.style.zIndex = '10000';
+    }
+    
+    document.body.appendChild(menu);
+    
+    // Close menu when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', closeExportMenuOnClickOutside);
+    }, 100);
 }
+
+function closeExportMenu() {
+    const menu = document.querySelector('.export-menu');
+    if (menu) {
+        menu.remove();
+        document.removeEventListener('click', closeExportMenuOnClickOutside);
+    }
+}
+
+function closeExportMenuOnClickOutside(e) {
+    const menu = document.querySelector('.export-menu');
+    const exportBtn = document.getElementById('exportBtn');
+    if (menu && !menu.contains(e.target) && e.target !== exportBtn && !exportBtn.contains(e.target)) {
+        closeExportMenu();
+    }
+}
+
+function exportAsPNG() {
+    closeExportMenu();
+    
+    if (!state.processingData) {
+        showError('No visualization to export. Please process text first.');
+        return;
+    }
+    
+    const vizWrapper = document.querySelector('#vizWrapper');
+    if (!vizWrapper) {
+        showError('No visualization found to export.');
+        return;
+    }
+    
+    // Handle different visualization types
+    if (state.visualizationMode === 'network' || state.visualizationMode === 'attention') {
+        // For SVG visualizations
+        const svg = vizWrapper.querySelector('svg');
+        if (svg) {
+            exportSVGAsPNG(svg, `neural-echo-${state.visualizationMode}-${Date.now()}.png`);
+        } else {
+            // For canvas visualizations
+            const canvas = vizWrapper.querySelector('canvas');
+            if (canvas) {
+                exportCanvasAsPNG(canvas, `neural-echo-${state.visualizationMode}-${Date.now()}.png`);
+            } else {
+                showError('Unable to export this visualization as PNG.');
+            }
+        }
+    } else if (state.visualizationMode === 'embedding' || state.visualizationMode === 'flow') {
+        // For Three.js or complex visualizations
+        const canvas = vizWrapper.querySelector('canvas');
+        if (canvas) {
+            exportCanvasAsPNG(canvas, `neural-echo-${state.visualizationMode}-${Date.now()}.png`);
+        } else {
+            // Try to capture SVG if it's a flow visualization
+            const svg = vizWrapper.querySelector('svg');
+            if (svg) {
+                exportSVGAsPNG(svg, `neural-echo-${state.visualizationMode}-${Date.now()}.png`);
+            } else {
+                showError('Unable to export this visualization as PNG.');
+            }
+        }
+    }
+}
+
+function exportSVGAsPNG(svgElement, filename) {
+    // Clone the SVG to avoid modifying the original
+    const svgClone = svgElement.cloneNode(true);
+    
+    // Get SVG dimensions
+    const bbox = svgElement.getBoundingClientRect();
+    svgClone.setAttribute('width', bbox.width);
+    svgClone.setAttribute('height', bbox.height);
+    
+    // Convert SVG to string
+    const svgString = new XMLSerializer().serializeToString(svgClone);
+    const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    // Create image and canvas
+    const img = new Image();
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = bbox.width * 2; // Higher resolution
+        canvas.height = bbox.height * 2;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.scale(2, 2); // Scale for higher resolution
+        
+        // White background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, bbox.width, bbox.height);
+        
+        // Draw the image
+        ctx.drawImage(img, 0, 0, bbox.width, bbox.height);
+        
+        // Export as PNG
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+        
+        URL.revokeObjectURL(svgUrl);
+    };
+    
+    img.src = svgUrl;
+}
+
+function exportCanvasAsPNG(canvasElement, filename) {
+    canvasElement.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    }, 'image/png');
+}
+
+function exportAsJSON() {
+    closeExportMenu();
+    
+    if (!state.processingData) {
+        showError('No data to export. Please process text first.');
+        return;
+    }
+    
+    // Prepare export data
+    const exportData = {
+        metadata: {
+            exportDate: new Date().toISOString(),
+            model: state.currentModel,
+            visualizationMode: state.visualizationMode,
+            version: '1.0.0'
+        },
+        input: {
+            text: state.currentText,
+            tokenCount: state.processingData.tokens.length
+        },
+        tokens: state.processingData.tokens,
+        embeddings: state.processingData.embeddings,
+        attention: state.processingData.attention,
+        processingMetadata: state.processingData.metadata
+    };
+    
+    // Create and download JSON file
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `neural-echo-data-${Date.now()}.json`;
+    a.click();
+    
+    URL.revokeObjectURL(url);
+    
+    // Show success message
+    console.log('Data exported successfully');
+}
+
+// Make functions globally accessible
+window.exportAsPNG = exportAsPNG;
+window.exportAsJSON = exportAsJSON;
+window.closeExportMenu = closeExportMenu;
 
 function toggleFullscreen() {
     const vizContainer = document.getElementById('vizContainer');
@@ -742,6 +959,20 @@ function showError(message) {
 
 window.closeErrorModal = function() {
     const modal = document.getElementById('errorModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+};
+
+function showHelp() {
+    const modal = document.getElementById('helpModal');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+window.closeHelpModal = function() {
+    const modal = document.getElementById('helpModal');
     if (modal) {
         modal.classList.remove('active');
     }

@@ -303,6 +303,12 @@ if __name__ == '__main__':
     model_manager.get_model(app.config['DEFAULT_MODEL'])
     logger.info("Model loaded successfully!")
     
+    # Optionally pre-load GPT-2 as well for faster switching
+    # Uncomment the following lines if you have enough memory
+    # logger.info("Pre-loading GPT-2 model...")
+    # model_manager.get_model('gpt2')
+    # logger.info("GPT-2 loaded successfully!")
+    
     # Run the application
     app.run(
         host='127.0.0.1',

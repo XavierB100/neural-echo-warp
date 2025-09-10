@@ -116,6 +116,9 @@
                     <button class="floating-perf-btn" title="Performance Mode (Auto)">
                         <i class="fas fa-tachometer-alt"></i>
                     </button>
+                    <button class="floating-export-btn" id="exportBtn" title="Export">
+                        <i class="fas fa-download"></i>
+                    </button>
                     <button class="floating-fullscreen-btn" id="fullscreenBtn" title="Fullscreen">
                         <i class="fas fa-expand"></i>
                     </button>
@@ -151,6 +154,117 @@
         <div class="loader-spinner"></div>
         <p>Processing text through neural network...</p>
         <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 8px;">Longer texts may take a few seconds</p>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="modal help-modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3><i class="fas fa-question-circle"></i> Neural Echo Help Guide</h3>
+            <button class="modal-close" onclick="closeHelpModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body help-content">
+            <div class="help-section">
+                <h4>🚀 Getting Started</h4>
+                <ol>
+                    <li><strong>Enter Text:</strong> Type or paste text into the input field (up to 512 tokens)</li>
+                    <li><strong>Select Model:</strong> Choose between DistilBERT or GPT-2 for different analysis perspectives</li>
+                    <li><strong>Process:</strong> Click "Process Text" to analyze your text</li>
+                    <li><strong>Explore:</strong> Use the floating controls to switch between visualization modes</li>
+                </ol>
+            </div>
+            
+            <div class="help-section">
+                <h4>🎨 Visualization Modes</h4>
+                <div class="help-grid">
+                    <div class="help-item">
+                        <div class="help-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h5>Network Graph</h5>
+                        <p>Shows attention connections between tokens as an interactive force-directed graph. Drag nodes to explore relationships.</p>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="fas fa-th"></i></div>
+                        <h5>Attention Heatmap</h5>
+                        <p>Displays attention weights as a matrix. Navigate through layers and attention heads to see how tokens focus on each other.</p>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="fas fa-cube"></i></div>
+                        <h5>3D Embedding Space</h5>
+                        <p>Visualizes token embeddings in 3D space. Similar tokens cluster together. Rotate and zoom to explore semantic relationships.</p>
+                    </div>
+                    <div class="help-item">
+                        <div class="help-icon"><i class="fas fa-layer-group"></i></div>
+                        <h5>Layer Flow</h5>
+                        <p>Shows how tokens transform through the neural network layers. Watch the animated progression to understand processing depth.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="help-section">
+                <h4>⌨️ Controls & Shortcuts</h4>
+                <table class="help-table">
+                    <tr>
+                        <th>Action</th>
+                        <th>Control</th>
+                    </tr>
+                    <tr>
+                        <td>Zoom In/Out</td>
+                        <td>Mouse wheel or pinch</td>
+                    </tr>
+                    <tr>
+                        <td>Pan View</td>
+                        <td>Click and drag (2D) or right-click drag (3D)</td>
+                    </tr>
+                    <tr>
+                        <td>Rotate (3D)</td>
+                        <td>Left-click and drag</td>
+                    </tr>
+                    <tr>
+                        <td>Select Node</td>
+                        <td>Click on node</td>
+                    </tr>
+                    <tr>
+                        <td>View Details</td>
+                        <td>Hover over elements</td>
+                    </tr>
+                    <tr>
+                        <td>Fullscreen</td>
+                        <td>F key or fullscreen button</td>
+                    </tr>
+                    <tr>
+                        <td>Export</td>
+                        <td>Export button → PNG or JSON</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="help-section">
+                <h4>💡 Tips & Best Practices</h4>
+                <ul>
+                    <li><strong>Optimal Text Length:</strong> 50-200 tokens work best for interactive exploration</li>
+                    <li><strong>Performance Mode:</strong> Use the speedometer button to switch between quality and speed</li>
+                    <li><strong>Token Colors:</strong> Different colors represent token types (special, capitalized, numbers, punctuation, words)</li>
+                    <li><strong>Large Texts:</strong> For texts over 300 tokens, the app automatically optimizes for performance</li>
+                    <li><strong>Model Differences:</strong> DistilBERT focuses on bidirectional understanding, GPT-2 on forward prediction</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h4>🔧 Troubleshooting</h4>
+                <ul>
+                    <li><strong>Slow Performance?</strong> Try enabling Performance Mode or reducing text length</li>
+                    <li><strong>Visualization Not Loading?</strong> Refresh the page and ensure JavaScript is enabled</li>
+                    <li><strong>Export Not Working?</strong> Check browser permissions for downloads</li>
+                    <li><strong>Text Truncated?</strong> Maximum limit is 512 tokens (approximately 2000 characters)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="closeHelpModal()">Got it!</button>
+        </div>
     </div>
 </div>
 

@@ -97,6 +97,10 @@ class ModelManager:
                 logger.info(f"Loading tokenizer: {model_path}")
                 tokenizer = tokenizer_class.from_pretrained(model_path)
                 
+                # For GPT-2, set padding token if not present
+                if model_name == 'gpt2' and tokenizer.pad_token is None:
+                    tokenizer.pad_token = tokenizer.eos_token
+                
                 # Load model
                 logger.info(f"Loading model weights: {model_path}")
                 model = model_class.from_pretrained(

@@ -149,14 +149,18 @@ class TextProcessor:
         # Clean up tokens (remove special tokens markers)
         clean_tokens = []
         for token in tokens:
-            if token in ['[CLS]', '[SEP]', '[PAD]', '<s>', '</s>', '<pad>']:
+            # Handle special tokens
+            if token in ['[CLS]', '[SEP]', '[PAD]', '<s>', '</s>', '<pad>', '<|endoftext|>']:
                 clean_tokens.append(token)
             elif token.startswith('##'):
                 # Handle subword tokens (BERT-style)
                 clean_tokens.append(token[2:])
             elif token.startswith('Ġ'):
-                # Handle subword tokens (GPT-style)
-                clean_tokens.append(token[1:])
+                # Handle subword tokens (GPT-2 style) - Ġ represents a space
+                clean_tokens.append(' ' + token[1:])
+            elif token.startswith('Ċ'):
+                # Handle newline tokens (GPT-2 style)
+                clean_tokens.append('\n' + token[1:])
             else:
                 clean_tokens.append(token)
         
