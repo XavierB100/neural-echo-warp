@@ -117,11 +117,11 @@ function setupEventListeners() {
         helpBtn.addEventListener('click', showHelp);
     }
     
-    // Case Study button (placeholder)
+    // Case Study button - navigate to case study page
     const caseStudyBtn = document.getElementById('caseStudyBtn');
     if (caseStudyBtn) {
         caseStudyBtn.addEventListener('click', () => {
-            showError('Case studies coming soon! This feature will showcase real-world examples of neural network text processing.');
+            window.location.href = '/case_study';
         });
     }
     

@@ -52,6 +52,12 @@ def index():
                          default_model=app.config['DEFAULT_MODEL'])
 
 
+@app.route('/case_study')
+def case_study():
+    """Render case study page"""
+    return render_template('case_study.html')
+
+
 @app.route('/api/process_text', methods=['POST'])
 def process_text():
     """Process text through neural network model"""
